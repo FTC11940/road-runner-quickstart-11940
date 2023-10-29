@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+// https://rr.brott.dev/docs/v1-0/tuning/https://rr.brott.dev/docs/v1-0/tuning/
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -46,9 +48,13 @@ import java.util.List;
 
 @Config
 public final class MecanumDrive {
+
+
     public static class Params {
+
+
         // drive model parameters
-        public double inPerTick = 0;
+        public double inPerTick = 42.61; // TODO default of zero.
         public double lateralInPerTick = 1;
         public double trackWidthTicks = 0;
 
@@ -93,6 +99,8 @@ public final class MecanumDrive {
 
     public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
 
+
+
     public final VoltageSensor voltageSensor;
 
     public final IMU imu;
@@ -103,12 +111,16 @@ public final class MecanumDrive {
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
     public class DriveLocalizer implements Localizer {
-        public final Encoder leftFront, leftBack, rightBack, rightFront;
+        public final Encoder leftFront;
+        public final Encoder leftBack;
+        public final Encoder rightBack;
+        public final Encoder rightFront;
 
         private int lastLeftFrontPos, lastLeftBackPos, lastRightBackPos, lastRightFrontPos;
         private Rotation2d lastHeading;
 
         public DriveLocalizer() {
+
             leftFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftFront));
             leftBack = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftBack));
             rightBack = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightBack));
@@ -184,10 +196,15 @@ public final class MecanumDrive {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        // added by Scoy
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+//                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)); //original
+                RevHubOrientationOnRobot.UsbFacingDirection.RIGHT)); // added by Scoy for practice bot
         imu.initialize(parameters);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
